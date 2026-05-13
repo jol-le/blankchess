@@ -6,3 +6,11 @@ edition = "2024"
 [dependencies]
 eframe = "0.34.1"
 env_logger = "0.11.10"
+log = "0.4.29"
+serde = "1.0.228"
+
+egui_extras = { version = "*", features = ["all_loaders"] }
+image = { version = "0.25", features = ["jpeg", "png"] }
+num_enum = "0.7.6"
+strum = "0.28.0"
+strum_macros = "0.28.0"
