@@ -1,5 +1,8 @@
 <h1 align="center">blankchess</h1>
 
+A lightweight tool for creating, viewing and organizing chess files (PGN, FEN). Designed specifically for building training materials: import games, annotate positions, create custom puzzles and managing opening repertoires. Focuses on core functionality without bloat. 
+
+This project is primarily for personal use. Feedback is of course still welcome :)
 
 ## Installation:
 
@@ -12,7 +15,6 @@ $ cd blankchess
 
 ## Screenshots
 
-![program screenshot]()
 
 
 ## Built With
