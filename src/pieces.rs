@@ -20,6 +20,18 @@ pub(crate) enum PieceColor {
     None,
 }
 
+impl std::fmt::Display for PieceColor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let color = match self {
+            PieceColor::Black => "Black",
+            PieceColor::White => "White",
+            PieceColor::None => "",
+        };
+
+        write!(f, "{}", color)
+    }
+}
+
 #[derive(Debug, Copy, Clone)]
 pub(crate) struct Piece {
     pub(crate) kind: PieceKind,
@@ -235,7 +247,7 @@ impl Move {
     }
 
     pub(crate) fn is_pawnmove(&self, _board: String, _prev_move: Option<&Move>) -> bool {
-        true
+        false
     }
 }
 

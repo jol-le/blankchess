@@ -55,6 +55,10 @@ impl Default for Moves {
 }
 
 impl Moves {
+    pub fn clear_moves(&mut self) {
+        self.movelist.clear();
+    }
+
     pub fn get_pgn(&self) -> String {
         self.movelist
             .iter()
@@ -72,7 +76,6 @@ impl Moves {
     // Errortypes InvalidMove etc.
     pub fn make_move(&mut self, change: Move) -> Result<(), Error> {
         if !self.check_valid_move(change) {
-            // [TODO] Richtiges Handling
             return Err(Error);
         }
 

@@ -1,7 +1,7 @@
 use eframe::egui::{self, Color32, Event, Id, Pos2, Rect, Vec2};
 
-use crate::board::{Moves, SQUARE_SIZE, Square};
-use crate::pieces::{Move, Piece, PieceColor};
+use crate::board::{Moves, SQUARE_SIZE, STARTING_POSITION, Square};
+use crate::pieces::{Move, Piece, PieceColor, PieceKind};
 
 mod board;
 mod pieces;
@@ -41,8 +41,8 @@ impl Default for BlankChess {
                 min: Pos2::ZERO,
                 max: Pos2::ZERO,
             },
-            white_color: Color32::LIGHT_GRAY,
-            black_color: Color32::LIGHT_BLUE,
+            white_color: Color32::from_hex("#E0CBA8").unwrap(),
+            black_color: Color32::from_hex("#60463B").unwrap(),
             moves: Moves::default(),
             to_move: PieceColor::White,
             next_move_from: None,
@@ -122,29 +122,40 @@ impl eframe::App for BlankChess {
                     }
                 ) {
                     if self.next_move_from.is_none() {
-                        self.next_move_from = self.get_clicked_square(event);
+                        if let Some(next_move) = self.get_clicked_square(event) {
+                            if !matches!(
+                                self.get_piece_at_pos(next_move),
+                                Piece {
+                                    kind: PieceKind::Empty,
+                                    ..
+                                }
+                            ) {
+                                self.next_move_from = Some(next_move);
+                            }
+                        }
                     } else {
                         if let Some(to) = self.get_clicked_square(event) {
                             let piece = self.get_piece_at_pos(self.next_move_from.unwrap());
 
                             if piece.color != self.to_move {
-                                self.next_move_from = None;
                                 println!("Not your Move!"); // [TODO] Richtiges Handling
+                                self.next_move_from = None;
                                 continue;
                             }
 
-                            self.moves
-                                .make_move(Move {
-                                    from: self.next_move_from.unwrap(),
-                                    to,
-                                    piece,
-                                })
-                                .unwrap(); // [TODO] Richtiges Handling
-
-                            self.to_move = match &self.to_move {
-                                PieceColor::Black => PieceColor::White,
-                                PieceColor::White => PieceColor::Black,
-                                _ => PieceColor::None,
+                            match self.moves.make_move(Move {
+                                from: self.next_move_from.unwrap(),
+                                to,
+                                piece,
+                            }) {
+                                Ok(_) => {
+                                    self.to_move = match &self.to_move {
+                                        PieceColor::Black => PieceColor::White,
+                                        PieceColor::White => PieceColor::Black,
+                                        _ => PieceColor::None,
+                                    };
+                                }
+                                Err(_) => println!("Illegal Move"), // [TODO] Richtiges Handling
                             };
 
                             self.next_move_from = None;
@@ -166,8 +177,9 @@ impl eframe::App for BlankChess {
                     egui::Popup::menu(&file_response)
                         .id(egui::Id::new("file_menu"))
                         .show(|ui| {
-                            if ui.button("Open").clicked() {
-                                todo!();
+                            if ui.button("New").clicked() {
+                                self.moves.clear_moves();
+                                self.moves.state = STARTING_POSITION.to_string();
                             }
                         });
 
@@ -256,6 +268,7 @@ impl eframe::App for BlankChess {
                             self.board_rect = ui.min_rect();
                         });
                 });
+            ui.label(self.to_move.to_string() + " to move");
         });
     }
 }
